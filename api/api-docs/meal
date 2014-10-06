@@ -1,0 +1,41 @@
+{
+    "apiVersion":     "0.2",
+    "swaggerVersion": "1.1",
+    "basePath":       "http://94.23.120.133/insamiam/api",
+    "resourcePath":   "/meal",
+    "apis":           [
+        {
+            "path":        "/meal/{meal_id}",
+            "description": "Operations about meals",
+            "operations":  [
+                {
+                    "httpMethod":       "GET",
+                    "summary":          "Find meal by ID",
+                    "notes":            "Returns a meal based on ID.",
+                    "responseClass":    "meal",
+                    "nickname":         "get_meal_by_id",
+                    "parameters":       [
+                        {
+                            "name":          "meal_id",
+                            "description":   "ID of the meal that needs to be fetched",
+                            "paramType":     "path",
+                            "required":      true,
+                            "allowMultiple": false,
+                            "type":          "integer"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code":    400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code":    404,
+                            "message": "Meal not found"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

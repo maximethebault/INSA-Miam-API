@@ -1,0 +1,47 @@
+{
+    "apiVersion":     "0.2",
+    "swaggerVersion": "1.2",
+    "basePath":       "http://94.23.120.133/insamiam/api",
+    "apis":           [
+        {
+            "path":        "/api-docs/meal",
+            "description": "Operations about meal"
+        }
+    ],
+    "models":         {
+        "meal": {
+            "id":         "meal",
+            "properties": {
+                "id":       {
+                    "type":     "long",
+                    "required": true
+                },
+                "date":     {
+                    "type": "date"
+                },
+                "moment":   {
+                    "type": "string",
+                    "enum": [ "M", " E" ]
+                },
+                "starters": {
+                    "items": {
+                        "$ref": "starter"
+                    },
+                    "type":  "Array"
+                },
+                "mains":    {
+                    "items": {
+                        "$ref": "main"
+                    },
+                    "type":  "Array"
+                },
+                "desserts": {
+                    "items": {
+                        "$ref": "dessert"
+                    },
+                    "type":  "Array"
+                }
+            }
+        }
+    }
+}
