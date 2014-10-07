@@ -11,6 +11,7 @@ require 'libs/ActiveRecord/ActiveRecord.php';
 $cfg = ActiveRecord\Config::instance();
 $cfg->set_model_directory(__DIR__ . '/model');
 $cfg->set_connections(array('production' => 'mysql://' . $config['db_username'] . ':' . $config['db_password'] . '@' . $config['db_host'] . '/' . $config['db_database'] . ';charset=utf8'));
+$cfg->set_default_connection('production');
 
 require 'controller/Controller.php';
 $controller = new Controller();
