@@ -2228,7 +2228,7 @@ require.define("/shred/content.js", function(require, module, exports, __dirname
 
 require.define("/shred/mixins/headers.js", function(require, module, exports, __dirname, __filename) {
     // The header mixins allow you to add HTTP header support to any object. This
-    // might seem pointless: why not simply use a hash? The main.json reason is that, per
+    // might seem pointless: why not simply use a hash? The main reason is that, per
     // the [HTTP spec](http://www.w3.org/Protocols/rfc2616/rfc2616-sec4.html#sec4.2),
     // headers are case-insensitive. So, for example, `content-type` is the same as
     // `CONTENT-TYPE` which is the same as `Content-Type`. Since there is no way to
