@@ -1,0 +1,41 @@
+{
+    "apiVersion":     "0.2",
+    "swaggerVersion": "1.1",
+    "basePath":       "http://94.23.120.133/insamiam/api",
+    "resourcePath":   "/main.json",
+    "apis":           [
+        {
+            "path":        "/main/{main_id}",
+            "description": "Operations about mains",
+            "operations":  [
+                {
+                    "httpMethod":       "GET",
+                    "summary":          "Find main by ID",
+                    "notes":            "Returns a main based on ID.",
+                    "responseClass":    "main",
+                    "nickname":         "get_main_by_id",
+                    "parameters":       [
+                        {
+                            "name":          "main_id",
+                            "description":   "ID of the main that needs to be fetched",
+                            "paramType":     "path",
+                            "required":      true,
+                            "allowMultiple": false,
+                            "type":          "integer"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code":    400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code":    404,
+                            "message": "Main not found"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}

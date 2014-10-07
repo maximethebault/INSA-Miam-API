@@ -17,7 +17,7 @@ Simply copy these files to your apache root, or configure the DocumentRoot to be
 running Mac OSX 10.8, you can simply copy the files to the default webroot and start the built-in apache server:
 
 ```
-sudo cp -r src/main/html/* /Library/WebServer/Documents
+sudo cp -r src/main.json/html/* /Library/WebServer/Documents
 sudo apachectl start
 open http://localhost/index.html
 ```

@@ -1,0 +1,41 @@
+{
+    "apiVersion":     "0.2",
+    "swaggerVersion": "1.1",
+    "basePath":       "http://94.23.120.133/insamiam/api",
+    "resourcePath":   "/starter.json",
+    "apis":           [
+        {
+            "path":        "/starter/{starter_id}",
+            "description": "Operations about starters",
+            "operations":  [
+                {
+                    "httpMethod":       "GET",
+                    "summary":          "Find starter by ID",
+                    "notes":            "Returns a starter based on ID.",
+                    "responseClass":    "starter",
+                    "nickname":         "get_starter_by_id",
+                    "parameters":       [
+                        {
+                            "name":          "starter_id",
+                            "description":   "ID of the starter that needs to be fetched",
+                            "paramType":     "path",
+                            "required":      true,
+                            "allowMultiple": false,
+                            "type":          "integer"
+                        }
+                    ],
+                    "responseMessages": [
+                        {
+                            "code":    400,
+                            "message": "Invalid ID supplied"
+                        },
+                        {
+                            "code":    404,
+                            "message": "Starter not found"
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
