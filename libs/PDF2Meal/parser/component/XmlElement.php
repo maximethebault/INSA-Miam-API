@@ -3,9 +3,11 @@
 abstract class XmlElement
 {
     private $parent;
+    private $children;
 
     protected function __construct($parent) {
         $this->parent = $parent;
+        $this->children = array();
     }
 
     abstract public function getName();

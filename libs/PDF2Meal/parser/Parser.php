@@ -80,22 +80,22 @@ class Parser
     }
 
     private function tagClosed($parser, $tag) {
-        switch($tag) {
-            case 'pages':
+        if($this->parsingObject) {
+            $this->parsingObject->tagClosed($tag);
+        }
+        else {
+            switch($tag) {
+                case 'pages':
 
-                break;
-            case 'page':
-                array_push($this->parsedPages, $this->parsingObject);
-                $this->parsingObject = null;
-                break;
-            default:
-                if($this->parsingObject) {
-                    $this->parsingObject->tagClosed($tag);
-                }
-                else {
+                    break;
+                case 'page':
+                    $this->parsedPages[] = $this->parsingObject;
+                    $this->parsingObject = null;
+                    break;
+                default:
                     throw new Exception('No one handling closing tag "' . $tag . '" at root');
-                }
-                break;
+                    break;
+            }
         }
     }
 }
