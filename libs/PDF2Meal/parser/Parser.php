@@ -8,7 +8,7 @@
 class Parser
 {
     private $pdfPath;
-    private $parsedPages;
+    private $pages;
     private $parsingObject;
 
     public function __construct($pdfPath) {
@@ -49,27 +49,42 @@ class Parser
         }
 
         xml_parser_free($parser);
-        return $this->parsedPages;
+        return $this->pages;
     }
 
-    private function tagOpen($parser, $tag, $attrs) {
+    /**
+     *
+     * Called by the parser whenever a tag is opened at this or a deeper depth in the XML tree
+     *
+     * @param $parser  Object the parser
+     * @param $tagName string the tag name of the opened XML tag
+     * @param $attrs   array  the attributes of the opened XML tag
+     *
+     * @throws Exception
+     */
+    private function tagOpen($parser, $tagName, $attrs) {
         if($this->parsingObject) {
-            $this->parsingObject->tagOpen($tag, $attrs);
+            $this->parsingObject->tagOpen($tagName, $attrs);
         }
         else {
-            switch($tag) {
+            switch($tagName) {
                 case 'pages':
-                    $this->parsedPages = array();
-                    break;
-                case 'page':
-                    $this->parsingObject = new Page();
+                    $this->parsingObject = new Pages();
                     break;
                 default:
-                    throw new Exception('Unexpected tag "' . $tag . '" at root');
+                    throw new Exception('Unexpected tag "' . $tagName . '" at root');
             }
         }
     }
 
+    /**
+     * Called by the parser whenever a tag at this or a deeper depth in the XML tree has got data
+     *
+     * @param $parser  Object the parser
+     * @param $data    string the data of the tag
+     *
+     * @throws Exception
+     */
     private function tagData($parser, $data) {
         if($this->parsingObject) {
             $this->parsingObject->tagData($data);
@@ -79,21 +94,25 @@ class Parser
         }
     }
 
-    private function tagClosed($parser, $tag) {
+    /**
+     * Called by the parser whenever a tag is closed at this or a deeper depth in the XML tree
+     *
+     * @param $parser  Object the parser
+     * @param $tagName string the tag name of the closed XML tag
+     *
+     * @throws Exception
+     */
+    private function tagClosed($parser, $tagName) {
         if($this->parsingObject) {
-            $this->parsingObject->tagClosed($tag);
+            $this->parsingObject->tagClosed($tagName);
         }
         else {
-            switch($tag) {
+            switch($tagName) {
                 case 'pages':
-
-                    break;
-                case 'page':
-                    $this->parsedPages[] = $this->parsingObject;
-                    $this->parsingObject = null;
+                    $this->pages = $this->parsingObject;
                     break;
                 default:
-                    throw new Exception('No one handling closing tag "' . $tag . '" at root');
+                    throw new Exception('No one handling closing tag "' . $tagName . '" at root');
                     break;
             }
         }
