@@ -292,10 +292,11 @@ class Model
     /**
      * Passing $guard_attributes as true will throw an exception if an attribute does not exist.
      *
-     * @throws ActiveRecord\UndefinedPropertyException
      *
      * @param array   $attributes       An array in the form array(name => value, ...)
      * @param boolean $guard_attributes Flag of whether or not protected/non-accessible attributes should be guarded
+     *
+     * @throws UndefinedPropertyException
      */
     private function set_attributes_via_mass_assignment(array &$attributes, $guard_attributes) {
         //access uninflected columns since that is what we would have in result set
@@ -1039,6 +1040,7 @@ class Model
      *
      * @param Closure $closure The closure to execute. To cause a rollback have your closure return false or throw an exception.
      *
+     * @throws \Exception
      * @return boolean True if the transaction was committed, False if rolled back.
      */
     public static function transaction($closure) {
@@ -1428,6 +1430,7 @@ class Model
     /**
      * Deletes this model from the database and returns true if successful.
      *
+     * @throws ActiveRecordException
      * @return boolean
      */
     public function delete() {
@@ -1452,9 +1455,10 @@ class Model
     /**
      * Throws an exception if this model is set to readonly.
      *
-     * @throws ActiveRecord\ReadOnlyException
      *
      * @param string $method_name Name of method that was invoked on model for exception message
+     *
+     * @throws ReadOnlyException
      */
     private function verify_not_readonly($method_name) {
         if($this->is_readonly()) {
