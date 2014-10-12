@@ -49,5 +49,3 @@ function activerecord_autoload($class_name) {
         require_once $file;
     }
 }
-
-?>
