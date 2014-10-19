@@ -35,7 +35,7 @@
     },
     "autoload":     {
         "psr-4": {
-            "Maximethebault\\INSA-Miam-API\\": "src/"
+            "Maximethebault\\INSAMiamAPI\\": "src/"
         }
     }
 }

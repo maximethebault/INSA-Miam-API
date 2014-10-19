@@ -1,7 +1,7 @@
 {
     "apiVersion":     "0.2",
     "swaggerVersion": "1.1",
-    "basePath":       "http://94.23.120.133/insamiam/api",
+    "basePath": "http://94.23.120.133/insamiam/doc/api",
     "resourcePath":   "/meal.json",
     "apis":           [
         {
