@@ -4,7 +4,7 @@
     "basePath":       "http://94.23.120.133/insamiam/api",
     "apis":           [
         {
-            "path": "/api-docs/meal.json",
+            "path":        "/api-docs/meal.json",
             "description": "Operations about meal"
         },
         {

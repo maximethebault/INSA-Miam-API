@@ -1,6 +1,8 @@
 <?php
 
-class PDF2Text
+// TODO
+
+class Pdf2Meal
 {
     private $pdfPath;
 
@@ -8,10 +10,7 @@ class PDF2Text
         $this->pdfPath = $pdfPath;
     }
 
-    /**
-     *
-     */
     public function parse() {
-        return [new Page()];
+        return [];
     }
 }
