@@ -1,5 +1,7 @@
 <?php
 
+use Maximethebault\INSAMiamAPI\Controller\Controller;
+
 set_include_path('.');
 chdir('.');
 set_time_limit(30);
