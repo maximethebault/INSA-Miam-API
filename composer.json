@@ -15,6 +15,10 @@
         },
         {
             "type": "vcs",
+            "url": "https://github.com/maximethebault/IntraFetcher.git"
+        },
+        {
+            "type": "vcs",
             "url":  "https://github.com/maximethebault/Pdf2Table.git"
         },
         {
@@ -27,7 +31,7 @@
         }
     ],
     "require":      {
-        "maximethebault/Pdf2Table":        "@stable",
+        "maximethebault/IntraFetcher": "@stable",
         "maximethebault/php-activerecord": "master-dev"
     },
     "require-dev":  {
