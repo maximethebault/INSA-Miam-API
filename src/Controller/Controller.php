@@ -1,5 +1,9 @@
 <?php
 
+namespace Maximethebault\INSAMiamAPI\Controller;
+
+use Maximethebault\INSAMiamAPI\Model\Meal;
+
 class Controller
 {
     public function run() {
@@ -16,11 +20,11 @@ class Controller
                 $this->meal($query_path, $values);
             }
             else {
-                throw new Exception('Unknown endpoint');
+                throw new \Exception('Unknown endpoint');
             }
         }
         else {
-            throw new Exception('No endpoint');
+            throw new \Exception('No endpoint');
         }
     }
 
@@ -40,7 +44,7 @@ class Controller
                 }
                 break;
             default:
-                throw new Exception('Unsupported HTTP verb for this endpoint');
+                throw new \Exception('Unsupported HTTP verb for this endpoint');
         }
     }
 } 

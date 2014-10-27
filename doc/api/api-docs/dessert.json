@@ -1,23 +1,23 @@
 {
     "apiVersion":     "0.2",
     "swaggerVersion": "1.1",
-    "basePath":       "http://94.23.120.133/insamiam/api",
-    "resourcePath":   "/main.json",
+    "basePath": "http://94.23.120.133/insamiam/doc/api",
+    "resourcePath":   "/dessert.json",
     "apis":           [
         {
-            "path":        "/main/{main_id}",
-            "description": "Operations about mains",
+            "path":        "/dessert/{dessert_id}",
+            "description": "Operations about desserts",
             "operations":  [
                 {
                     "httpMethod":       "GET",
-                    "summary":          "Find main by ID",
-                    "notes":            "Returns a main based on ID.",
-                    "responseClass":    "main",
-                    "nickname":         "get_main_by_id",
+                    "summary":          "Find dessert by ID",
+                    "notes":            "Returns a dessert based on ID.",
+                    "responseClass":    "dessert",
+                    "nickname":         "get_dessert_by_id",
                     "parameters":       [
                         {
-                            "name":          "main_id",
-                            "description":   "ID of the main that needs to be fetched",
+                            "name":          "dessert_id",
+                            "description":   "ID of the dessert that needs to be fetched",
                             "paramType":     "path",
                             "required":      true,
                             "allowMultiple": false,
@@ -31,7 +31,7 @@
                         },
                         {
                             "code":    404,
-                            "message": "Main not found"
+                            "message": "Dessert not found"
                         }
                     ]
                 }

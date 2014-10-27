@@ -1,23 +1,23 @@
 {
     "apiVersion":     "0.2",
     "swaggerVersion": "1.1",
-    "basePath":       "http://94.23.120.133/insamiam/api",
-    "resourcePath":   "/starter.json",
+    "basePath": "http://94.23.120.133/insamiam/doc/api",
+    "resourcePath":   "/meal.json",
     "apis":           [
         {
-            "path":        "/starter/{starter_id}",
-            "description": "Operations about starters",
+            "path":        "/meal/{meal_id}",
+            "description": "Operations about meals",
             "operations":  [
                 {
                     "httpMethod":       "GET",
-                    "summary":          "Find starter by ID",
-                    "notes":            "Returns a starter based on ID.",
-                    "responseClass":    "starter",
-                    "nickname":         "get_starter_by_id",
+                    "summary":          "Find meal by ID",
+                    "notes":            "Returns a meal based on ID.",
+                    "responseClass":    "meal",
+                    "nickname":         "get_meal_by_id",
                     "parameters":       [
                         {
-                            "name":          "starter_id",
-                            "description":   "ID of the starter that needs to be fetched",
+                            "name":          "meal_id",
+                            "description":   "ID of the meal that needs to be fetched",
                             "paramType":     "path",
                             "required":      true,
                             "allowMultiple": false,
@@ -31,7 +31,7 @@
                         },
                         {
                             "code":    404,
-                            "message": "Starter not found"
+                            "message": "Meal not found"
                         }
                     ]
                 }

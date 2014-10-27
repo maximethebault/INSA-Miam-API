@@ -1,23 +1,23 @@
 {
     "apiVersion":     "0.2",
     "swaggerVersion": "1.1",
-    "basePath":       "http://94.23.120.133/insamiam/api",
-    "resourcePath":   "/dessert.json",
+    "basePath": "http://94.23.120.133/insamiam/doc/api",
+    "resourcePath":   "/starter.json",
     "apis":           [
         {
-            "path":        "/dessert/{dessert_id}",
-            "description": "Operations about desserts",
+            "path":        "/starter/{starter_id}",
+            "description": "Operations about starters",
             "operations":  [
                 {
                     "httpMethod":       "GET",
-                    "summary":          "Find dessert by ID",
-                    "notes":            "Returns a dessert based on ID.",
-                    "responseClass":    "dessert",
-                    "nickname":         "get_dessert_by_id",
+                    "summary":          "Find starter by ID",
+                    "notes":            "Returns a starter based on ID.",
+                    "responseClass":    "starter",
+                    "nickname":         "get_starter_by_id",
                     "parameters":       [
                         {
-                            "name":          "dessert_id",
-                            "description":   "ID of the dessert that needs to be fetched",
+                            "name":          "starter_id",
+                            "description":   "ID of the starter that needs to be fetched",
                             "paramType":     "path",
                             "required":      true,
                             "allowMultiple": false,
@@ -31,7 +31,7 @@
                         },
                         {
                             "code":    404,
-                            "message": "Dessert not found"
+                            "message": "Starter not found"
                         }
                     ]
                 }
