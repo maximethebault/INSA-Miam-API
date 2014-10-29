@@ -2,29 +2,49 @@
 
 namespace Maximethebault\INSAMiamAPI\Controller;
 
+use Maximethebault\INSAMiamAPI\Exception\APIException;
 use Maximethebault\INSAMiamAPI\Model\Meal;
+use Maximethebault\IntraFetcher\Config;
 
 class Controller
 {
     public function run() {
         $uris = explode('?', substr($_SERVER['REQUEST_URI'], 1));
         $query_path = explode('/', $uris[0]);
-        while(array_shift($query_path) !== 'api' && count($query_path)) {
-            ;
+        $firstPart = array_shift($query_path);
+        while(($firstPart !== 'api' && $firstPart != 'cron') && count($query_path)) {
+            $firstPart = array_shift($query_path);
         }
-        if(count($query_path)) {
+        if($firstPart === 'api') {
+            if(!count($query_path)) {
+                throw new APIException('No endpoint');
+            }
             header('Content-type: application/json');
             $values = json_decode(file_get_contents('php://input'), true);
             $endpoint = array_shift($query_path);
             if($endpoint == 'meal') {
+                // are the Mc Download's fans in the place tonight?!
+                // let's get the api meal (lolilol)
                 $this->meal($query_path, $values);
             }
             else {
-                throw new \Exception('Unknown endpoint');
+                throw new APIException('Unknown endpoint');
+            }
+        }
+        elseif($firstPart === 'cron') {
+            $config = new Config();
+            $config->setInsaUsername(\ActualConfig::$username);
+            $config->setInsaPassword(\ActualConfig::$password);
+            $config->setTempPath(__DIR__ . '/../../tmp/');
+            try {
+                Meal::populateDb($config);
+            }
+            catch(\Exception $e) {
+                mail(\ActualConfig::$adminEmail, 'INSA-Miam-Exception', $e->getMessage() . "\n" . $e->getTraceAsString());
             }
         }
         else {
-            throw new \Exception('No endpoint');
+            throw new \Exception('Unknown action');
         }
     }
 
@@ -44,7 +64,7 @@ class Controller
                 }
                 break;
             default:
-                throw new \Exception('Unsupported HTTP verb for this endpoint');
+                throw new APIException('Unsupported HTTP verb for this endpoint');
         }
     }
 } 

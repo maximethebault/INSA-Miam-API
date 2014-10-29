@@ -13,7 +13,7 @@ require_once 'config.php';
 
 $cfg = ActiveRecord\Config::instance();
 $cfg->set_model_directory(__DIR__ . '/src/Model');
-$cfg->set_connections(array('production' => 'mysql://' . $config['db_username'] . ':' . $config['db_password'] . '@' . $config['db_host'] . '/' . $config['db_database'] . ';charset=utf8'));
+$cfg->set_connections(array('production' => 'mysql://' . \ActualConfig::$db_username . ':' . \ActualConfig::$db_password . '@' . \ActualConfig::$db_host . '/' . \ActualConfig::$db_database . ';charset=utf8'));
 $cfg->set_default_connection('production');
 
 $controller = new Controller();
