@@ -4,3 +4,5 @@ INSA-Miam-API.iml
 .htaccess
 composer.lock
 vendor
+tmp
+!tmp/README.md
