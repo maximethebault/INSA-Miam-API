@@ -36,11 +36,13 @@ class Controller
             $config->setInsaUsername(\ActualConfig::$username);
             $config->setInsaPassword(\ActualConfig::$password);
             $config->setTempPath(__DIR__ . '/../../tmp/');
+            $config->setPdfPath(__DIR__ . '/../../menus/');
             try {
                 Meal::populateDb($config);
             }
             catch(\Exception $e) {
-                mail(\ActualConfig::$adminEmail, 'INSA-Miam-Exception', $e->getMessage() . "\n" . $e->getTraceAsString());
+                mail(\ActualConfig::$adminEmail, 'INSA-Miam-Exception', get_class($e) . "\n" . $e->getMessage() . "\n" . $e->getTraceAsString());
+                throw $e;
             }
         }
         else {
