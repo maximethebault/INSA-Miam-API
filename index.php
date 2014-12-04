@@ -1,5 +1,4 @@
 <?php
-
 use Maximethebault\INSAMiamAPI\Controller\Controller;
 
 set_include_path('.');

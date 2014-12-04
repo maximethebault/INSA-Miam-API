@@ -31,7 +31,6 @@ class Meal extends Model
     );
 
     public static function populateDb($config) {
-        // TODO: handle exceptions, send mail if needed !
         $intraFetcher = new IntraFetcher($config);
         $intraFetcher->checkForMenu();
         // TODO: hash each part of the menu to know what was changed in case of update
@@ -156,14 +155,18 @@ class Meal extends Model
             else {
                 $courseObjectName = 'Dessert';
             }
+            $linkProperty = strtolower($courseObjectName) . '_id';
             $linkObjectName = 'Meal' . $courseObjectName;
+            // we need to add the namespace info
+            $courseObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . $courseObjectName;
+            $linkObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . $linkObjectName;
             foreach($rawCourses as $rawCourse) {
                 $splitCourses = explode('/', $rawCourse->getText());
                 foreach($splitCourses as $course) {
                     // we also need to strip "*"
                     $course = trim($course, " \t\n\r\0\x0B*");
                     /** @var $similarCourses Course[] */
-                    $similarCourses = $courseObjectName::find('all', array('conditions' => array("name LIKE '%?%'", $course)));
+                    $similarCourses = $courseObjectName::find('all', array('conditions' => array("name LIKE ?", '%' . $course . '%')));
                     if(!count($similarCourses)) {
                         /** @var $courseObject Course */
                         $courseObject = new $courseObjectName();
@@ -176,7 +179,7 @@ class Meal extends Model
                     /** @var $link MealCourse */
                     $link = new $linkObjectName();
                     $link->meal_id = $meal->id;
-                    $link->starter_id = $courseObject->id;
+                    $link->$linkProperty = $courseObject->id;
                     $link->save();
                 }
             }

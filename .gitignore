@@ -6,3 +6,5 @@ composer.lock
 vendor
 tmp
 !tmp/README.md
+menus
+!menus/README.md
