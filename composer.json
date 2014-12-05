@@ -32,7 +32,8 @@
     ],
     "require":      {
         "maximethebault/IntraFetcher": "@stable",
-        "maximethebault/php-activerecord": "master-dev"
+        "maximethebault/php-activerecord": "master-dev",
+        "slim/slim": "2.*"
     },
     "require-dev":  {
         "phpunit/phpunit": "4.3.*"

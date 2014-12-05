@@ -5,7 +5,6 @@ namespace Maximethebault\INSAMiamAPI\Model;
 use ActiveRecord\DateTime;
 use ActiveRecord\Model;
 use Maximethebault\IntraFetcher\IntraFetcher;
-use Maximethebault\Pdf2Table\XmlElements\Textline;
 
 /**
  * @property int                      id
@@ -22,6 +21,7 @@ class Meal extends Model
     public static $table_name = 'meal';
 
     public static $has_many = array(
+        array('textlines', 'class_name' => 'Textline', 'foreign_key' => 'meal_id'),
         array('mealStarters', 'class_name' => 'MealStarter', 'foreign_key' => 'meal_id'),
         array('starters', 'class_name' => 'Starter', 'through' => 'mealStarters'),
         array('mealMains', 'class_name' => 'MealMain', 'foreign_key' => 'meal_id'),
@@ -44,8 +44,11 @@ class Meal extends Model
                 $initialDate = new DateTime();
                 $initialDate->setISODate($menu->getMenuId()->getYear(), $menu->getMenuId()->getWeekNumber());
                 for($i = 1; $i <= 7; $i++) {
-                    self::parseLunch(new DateTime($initialDate->format('Y-m-d')), $table->getCell($i, 1)->getTextline(), $table->getCell($i, 2)->getTextline());
-                    self::parseDinner(new DateTime($initialDate->format('Y-m-d')), $table->getCell($i, 3)->getTextline());
+
+                    self::parseLunch($initialDate, $table->getCell($i, 1)->getTextline(), $table->getCell($i, 2)->getTextline());
+
+                    self::parseDinner($initialDate, $table->getCell($i, 3)->getTextline());
+
                     $initialDate->modify('+1 day');
                 }
             }
@@ -59,8 +62,8 @@ class Meal extends Model
 
     /**
      * @param $date     DateTime
-     * @param $starters Textline[]
-     * @param $rest     Textline[]
+     * @param $starters \Maximethebault\Pdf2Table\XmlElements\Textline[]
+     * @param $rest     \Maximethebault\Pdf2Table\XmlElements\Textline[]
      */
     public static function parseLunch($date, $starters, $rest) {
         // for the moment, naive parsing: assume one course per line, or 2 when separated with "/"
@@ -97,7 +100,7 @@ class Meal extends Model
 
     /**
      * @param $date    DateTime
-     * @param $courses Textline[]
+     * @param $courses \Maximethebault\Pdf2Table\XmlElements\Textline[]
      */
     public static function parseDinner($date, $courses) {
         // for the moment, naive parsing: assume one course per line, or 2 when separated with "/"
@@ -136,25 +139,52 @@ class Meal extends Model
     }
 
     /**
-     * From a Meal and all of its courses, fill the database (checks for duplicate courses)
+     * From a Meal and all of its courses, fill the database (fill the textline table)
      *
      * @param $meal    Meal the associated Meal
-     * @param $courses Textline[][]
+     * @param $courses \Maximethebault\Pdf2Table\XmlElements\Textline[][]
      */
     public static function parseMeal($meal, $courses) {
+        $ordering = 0;
         for($i = 0; $i < 3; $i++) {
-            /** @var $rawCourses Textline[] */
+            /** @var $rawCourses \Maximethebault\Pdf2Table\XmlElements\Textline[] */
             $rawCourses = $courses[$i];
-            /** @var $courseObjectName Course */
-            if($i == 0) {
-                $courseObjectName = 'Starter';
+            foreach($rawCourses as $rawCourse) {
+                $splitCourses = explode('/', $rawCourse->getText());
+                foreach($splitCourses as $course) {
+                    // we also need to strip "*"
+                    $course = trim($course, " \t\n\r\0\x0B*");
+                    $textlineObject = new Textline();
+                    $textlineObject->meal_id = $meal->id;
+                    $textlineObject->ordering = $ordering++;
+                    $textlineObject->char_size = $rawCourse->getMaxCharSize();
+                    $textlineObject->cell_size = $rawCourse->getParentCellSize();
+                    $textlineObject->content = $course;
+                    $textlineObject->save();
+                }
             }
-            elseif($i == 1) {
-                $courseObjectName = 'Main';
-            }
+            $textlineObject = new Textline();
+            $textlineObject->meal_id = $meal->id;
+            $textlineObject->ordering = $ordering++;
+            $textlineObject->content = '';
+            $textlineObject->save();
+        }
+    }
+
+    /*
+     * for($i = 0; $i < 3; $i++) {
+            /** @var $rawCourses Textline[]
+$rawCourses = $courses[$i];
+    /** @var $courseObjectName Course
+if($i == 0) {
+$courseObjectName = 'Starter';
+}
+elseif($i == 1) {
+    $courseObjectName = 'Main';
+}
             else {
-                $courseObjectName = 'Dessert';
-            }
+    $courseObjectName = 'Dessert';
+}
             $linkProperty = strtolower($courseObjectName) . '_id';
             $linkObjectName = 'Meal' . $courseObjectName;
             // we need to add the namespace info
@@ -165,10 +195,10 @@ class Meal extends Model
                 foreach($splitCourses as $course) {
                     // we also need to strip "*"
                     $course = trim($course, " \t\n\r\0\x0B*");
-                    /** @var $similarCourses Course[] */
+                    /** @var $similarCourses Course[]
                     $similarCourses = $courseObjectName::find('all', array('conditions' => array("name LIKE ?", '%' . $course . '%')));
                     if(!count($similarCourses)) {
-                        /** @var $courseObject Course */
+                        /** @var $courseObject Course
                         $courseObject = new $courseObjectName();
                         $courseObject->name = $course;
                         $courseObject->save();
@@ -176,13 +206,82 @@ class Meal extends Model
                     else {
                         $courseObject = $similarCourses[0];
                     }
-                    /** @var $link MealCourse */
+                    /** @var $link MealCourse
                     $link = new $linkObjectName();
                     $link->meal_id = $meal->id;
                     $link->$linkProperty = $courseObject->id;
                     $link->save();
                 }
             }
+        }
+     */
+
+    /**
+     * Analyses a lunch & persists the results in database
+     *
+     * @param $initialDate DateTime lunch's date
+     * @param $cell1Textlines \Maximethebault\Pdf2Table\XmlElements\Textline[] textlines of the first cell
+     * @param $cell2Textlines \Maximethebault\Pdf2Table\XmlElements\Textline[] textlines of the second cell
+     */
+    private static function analyseLunch($initialDate, $cell1Textlines, $cell2Textlines) {
+        $lunch = new Meal();
+        $lunch->date = new DateTime($initialDate->format('Y-m-d'));
+        $lunch->type = self::MEAL_TYPE_LUNCH;
+        $lunch->validated = false;
+        $lunch->closed = false;
+        $lunch->save();
+
+        $ordering = 1;
+        foreach($cell1Textlines as $textline) {
+            $textlineObject = new Textline();
+            $textlineObject->meal_id = $lunch->id;
+            $textlineObject->ordering = $ordering++;
+            $textlineObject->char_size = $textline->getMaxCharSize();
+            $textlineObject->cell_size = $textline->getParentCellSize();
+            $textlineObject->content = $textline->getText();
+            $textlineObject->save();
+        }
+
+        $textlineObject = new Textline();
+        $textlineObject->meal_id = $lunch->id;
+        $textlineObject->ordering = $ordering++;
+        $textlineObject->content = '';
+        $textlineObject->save();
+
+        foreach($cell2Textlines as $textline) {
+            $textlineObject = new Textline();
+            $textlineObject->meal_id = $lunch->id;
+            $textlineObject->ordering = $ordering++;
+            $textlineObject->char_size = $textline->getMaxCharSize();
+            $textlineObject->cell_size = $textline->getParentCellSize();
+            $textlineObject->content = $textline->getText();
+            $textlineObject->save();
+        }
+    }
+
+    /**
+     * Analyses a dinner & persists the results in database
+     *
+     * @param $initialDate DateTime dinner's date
+     * @param $cellTextlines \Maximethebault\Pdf2Table\XmlElements\Textline[] textlines of the first cell
+     */
+    private static function analyseDinner($initialDate, $cellTextlines) {
+        $dinner = new Meal();
+        $dinner->date = new DateTime($initialDate->format('Y-m-d'));
+        $dinner->type = self::MEAL_TYPE_DINNER;
+        $dinner->validated = false;
+        $dinner->closed = false;
+        $dinner->save();
+
+        $ordering = 1;
+        foreach($cellTextlines as $textline) {
+            $textlineObject = new Textline();
+            $textlineObject->meal_id = $dinner->id;
+            $textlineObject->ordering = $ordering++;
+            $textlineObject->char_size = $textline->getMaxCharSize();
+            $textlineObject->cell_size = $textline->getParentCellSize();
+            $textlineObject->content = $textline->getText();
+            $textlineObject->save();
         }
     }
 }
