@@ -9,4 +9,8 @@ class Main extends Course
     static $has_many = array(
         array('mealMains', 'class_name' => 'MealMain', 'foreign_key' => 'main_id')
     );
+
+    public static $has_one = array(
+        array('main', 'class_name' => 'Main', 'foreign_key' => 'main_id')
+    );
 } 

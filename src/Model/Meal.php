@@ -21,7 +21,7 @@ class Meal extends Model
     public static $table_name = 'meal';
 
     public static $has_many = array(
-        array('textlines', 'class_name' => 'Textline', 'foreign_key' => 'meal_id'),
+        array('textlines', 'order' => 'ordering asc', 'class_name' => 'Textline', 'foreign_key' => 'meal_id'),
         array('mealStarters', 'class_name' => 'MealStarter', 'foreign_key' => 'meal_id'),
         array('starters', 'class_name' => 'Starter', 'through' => 'mealStarters'),
         array('mealMains', 'class_name' => 'MealMain', 'foreign_key' => 'meal_id'),
@@ -75,8 +75,13 @@ class Meal extends Model
         if(count($starters) <= 2 && count($rest) <= 2) {
             // restaurant is probably closed
             $mealObject->closed = true;
+            if(!count($starters) && !count($rest)) {
+                $mealObject->validated = true;
+            }
             $mealObject->save();
-            return;
+            if(!count($starters) && !count($rest)) {
+                return;
+            }
         }
         else {
             $mealObject->closed = false;
@@ -85,7 +90,8 @@ class Meal extends Model
         // we saved the mealObject to be able to get the 'id'
 
         // we need to split the '$rest' in mains and desserts
-        $splitIdx = -1;
+        // if we can't find the typical separator, we default to no-dessert
+        $splitIdx = count($rest);
         foreach($rest as $idx => $course) {
             if(preg_match('`yaourt`i', $course->getText())) {
                 $splitIdx = $idx;
@@ -112,8 +118,13 @@ class Meal extends Model
         if(count($courses) <= 2) {
             // restaurant is probably closed
             $mealObject->closed = true;
+            if(!count($courses)) {
+                $mealObject->validated = true;
+            }
             $mealObject->save();
-            return;
+            if(!count($courses)) {
+                return;
+            }
         }
         else {
             $mealObject->closed = false;
@@ -124,7 +135,7 @@ class Meal extends Model
         // we need to split the '$courses' in starters, mains and desserts
         // the starters only occupies 1 line (usually)
         $mainIdx = 1;
-        $dessertIdx = -1;
+        $dessertIdx = count($courses);
         foreach($courses as $idx => $course) {
             if(preg_match('`yaourt`i', $course->getText())) {
                 $dessertIdx = $idx;
@@ -149,17 +160,37 @@ class Meal extends Model
         for($i = 0; $i < 3; $i++) {
             /** @var $rawCourses \Maximethebault\Pdf2Table\XmlElements\Textline[] */
             $rawCourses = $courses[$i];
+            if(!count($rawCourses)) {
+                continue;
+            }
+            if($i == 0) {
+                $courseObjectName = 'Starter';
+            }
+            elseif($i == 1) {
+                $courseObjectName = 'Main';
+            }
+            else {
+                $courseObjectName = 'Dessert';
+            }
+            $linkProperty = strtolower($courseObjectName) . '_id';
+            $linkObjectName = 'Meal' . $courseObjectName;
+            // we need to add the namespace info
+            $courseObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . $courseObjectName;
+            $linkObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . $linkObjectName;
             foreach($rawCourses as $rawCourse) {
-                $splitCourses = explode('/', $rawCourse->getText());
+                // when we've got fractions (1/2, 3/4, ...), don't split!
+                $splitCourses = preg_split('`[^0-9]/[^0-9]`i', $rawCourse->getText());
                 foreach($splitCourses as $course) {
                     // we also need to strip "*"
                     $course = trim($course, " \t\n\r\0\x0B*");
+                    $similarCourses = $courseObjectName::first(array('select' => array('id, name, MATCH (name) AGAINST (?) AS score', $course)), array('order' => 'score desc'), array('conditions' => array("MATCH (name) AGAINST (?)", $course)));
                     $textlineObject = new Textline();
                     $textlineObject->meal_id = $meal->id;
                     $textlineObject->ordering = $ordering++;
                     $textlineObject->char_size = $rawCourse->getMaxCharSize();
                     $textlineObject->cell_size = $rawCourse->getParentCellSize();
                     $textlineObject->content = $course;
+                    $textlineObject->$linkProperty = $similarCourses ? $similarCourses->id : 0;
                     $textlineObject->save();
                 }
             }
