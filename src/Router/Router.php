@@ -7,10 +7,11 @@ use Maximethebault\INSAMiamAPI\Model\Main;
 use Maximethebault\INSAMiamAPI\Model\Meal;
 use Maximethebault\INSAMiamAPI\Model\Starter;
 use Maximethebault\IntraFetcher\Config;
+use Slim\Middleware\ContentTypes;
 use Slim\Slim;
 
 $app = new Slim();
-$app->response->headers->set('Content-Type', 'application/json');
+$app->add(new ContentTypes());
 
 $app->group('/api', function () use ($app) {
     $app->group('/meal', function () use ($app) {
@@ -31,34 +32,33 @@ $app->group('/api', function () use ($app) {
                     }, Meal::all($mealOptions))) . ']';
         });
         $app->post('/', function () use ($app) {
-            $post = json_decode($app->request()->getBody());
-            var_dump($post);
-            $meal = Meal::find((int) $post->id);
-            $meal->closed = (bool) $post->closed;
+            $post = $app->request()->getBody();
+            $meal = Meal::find((int) $post['id']);
+            $meal->closed = (bool) $post['closed'];
             $meal->validated = true;
             if($meal->closed) {
                 $meal->save();
                 return;
             }
-            $courses = $post->meal;
+            $courses = $post['courses'];
             foreach($courses as $course) {
-                if($course->type != 'starter' && $course->type != 'main' && $course->type != 'dessert') {
+                if($course['type'] != 'starter' && $course['type'] != 'main' && $course['type'] != 'dessert') {
                     //invalid type
                     continue;
                 }
-                $objectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . ucfirst($course->type);
-                $linkObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\Meal' . ucfirst($course->type);
-                $linkAttrName = $course->type . '_id';
+                $objectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . ucfirst($course['type']);
+                $linkObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\Meal' . ucfirst($course['type']);
+                $linkAttrName = $course['type'] . '_id';
                 if(!isset($course->id)) {
                     $courseObject = new $objectName();
-                    $courseObject->name = $course->name;
+                    $courseObject->name = $course['name'];
                     $courseObject->save();
                 }
                 else {
-                    $courseObject = $objectName::find((int) $course->id);
+                    $courseObject = $objectName::find((int) $course['id']);
                 }
                 $linkObject = new $linkObjectName();
-                $linkObject->meal_id = $meal->id;
+                $linkObject->meal_id = $meal['id'];
                 $linkObject->$linkAttrName = $courseObject->id;
                 $linkObject->save();
             }
