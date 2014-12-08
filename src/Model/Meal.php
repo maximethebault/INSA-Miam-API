@@ -202,51 +202,6 @@ class Meal extends Model
         }
     }
 
-    /*
-     * for($i = 0; $i < 3; $i++) {
-            /** @var $rawCourses Textline[]
-$rawCourses = $courses[$i];
-    /** @var $courseObjectName Course
-if($i == 0) {
-$courseObjectName = 'Starter';
-}
-elseif($i == 1) {
-    $courseObjectName = 'Main';
-}
-            else {
-    $courseObjectName = 'Dessert';
-}
-            $linkProperty = strtolower($courseObjectName) . '_id';
-            $linkObjectName = 'Meal' . $courseObjectName;
-            // we need to add the namespace info
-            $courseObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . $courseObjectName;
-            $linkObjectName = 'Maximethebault\\INSAMiamAPI\\Model\\' . $linkObjectName;
-            foreach($rawCourses as $rawCourse) {
-                $splitCourses = explode('/', $rawCourse->getText());
-                foreach($splitCourses as $course) {
-                    // we also need to strip "*"
-                    $course = trim($course, " \t\n\r\0\x0B*");
-                    /** @var $similarCourses Course[]
-                    $similarCourses = $courseObjectName::find('all', array('conditions' => array("name LIKE ?", '%' . $course . '%')));
-                    if(!count($similarCourses)) {
-                        /** @var $courseObject Course
-                        $courseObject = new $courseObjectName();
-                        $courseObject->name = $course;
-                        $courseObject->save();
-                    }
-                    else {
-                        $courseObject = $similarCourses[0];
-                    }
-                    /** @var $link MealCourse
-                    $link = new $linkObjectName();
-                    $link->meal_id = $meal->id;
-                    $link->$linkProperty = $courseObject->id;
-                    $link->save();
-                }
-            }
-        }
-     */
-
     /**
      * Analyses a lunch & persists the results in database
      *

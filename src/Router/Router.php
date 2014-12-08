@@ -1,6 +1,6 @@
 <?php
 
-namespace Maximethebault\INSAMiamAPI\Controller;
+namespace Maximethebault\INSAMiamAPI\Router;
 
 use Maximethebault\INSAMiamAPI\Model\Dessert;
 use Maximethebault\INSAMiamAPI\Model\Main;
@@ -32,6 +32,7 @@ $app->group('/api', function () use ($app) {
         });
         $app->post('/', function () use ($app) {
             $post = json_decode($app->request()->getBody());
+            var_dump($post);
             $meal = Meal::find((int) $post->id);
             $meal->closed = (bool) $post->closed;
             $meal->validated = true;
