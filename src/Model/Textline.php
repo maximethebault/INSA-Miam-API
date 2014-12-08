@@ -14,4 +14,10 @@ use ActiveRecord\Model;
 class Textline extends Model
 {
     public static $table_name = 'textline';
+
+    static $belongs_to = array(
+        array('starter'),
+        array('main'),
+        array('dessert')
+    );
 }

@@ -9,4 +9,8 @@ class Starter extends Course
     static $has_many = array(
         array('mealStarters', 'class_name' => 'MealStarter', 'foreign_key' => 'starter_id')
     );
+
+    public static $has_one = array(
+        array('starter', 'class_name' => 'Starter', 'foreign_key' => 'starter_id')
+    );
 } 

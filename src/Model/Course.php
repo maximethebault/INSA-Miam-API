@@ -10,5 +10,4 @@ use ActiveRecord\Model;
  */
 abstract class Course extends Model
 {
-
 } 
